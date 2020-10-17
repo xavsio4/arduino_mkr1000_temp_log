@@ -34,8 +34,9 @@ char ssid[] = SECRET_SSID;    //  your network SSID (name)
 char pass[] = SECRET_PASS;  // your network password 
 const char HOST[] = SECRET_HOST;   //the host API
 String httpsRequest = SECRET_REQUEST; // your API URL
-String key = SECRET_KEY; // your API KEY  
-
+String key = SECRET_KEY; // your API KEY
+  
+/* we suppose that the API uses verb post over ssl */
  WiFiSSLClient wifi;
  HttpClient client = HttpClient(wifi, HOST, 443);
  
