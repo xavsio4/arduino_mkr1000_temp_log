@@ -18,12 +18,12 @@ RTCZero rtc;
 
 /* Change these values to set the current initial time */
 const byte seconds = 0;
-const byte minutes = 23;
-const byte hours = 19;
+const byte minutes = 43;
+const byte hours = 9;
 
 /* Change these values to set the current initial date */
-const byte day = 9;
-const byte month = 9;
+const byte day = 17;
+const byte month = 10;
 const byte year = 20;
 
 
@@ -33,10 +33,11 @@ const byte year = 20;
 char ssid[] = SECRET_SSID;    //  your network SSID (name) 
 char pass[] = SECRET_PASS;  // your network password 
 const char HOST[] = SECRET_HOST;   //the host API
-String httpsRequest = SECRET_REQUEST; // your API URL 
+String httpsRequest = SECRET_REQUEST; // your API URL
+String key = SECRET_KEY; // your API KEY  
 
- WiFiClient wifi;
- HttpClient client = HttpClient(wifi, HOST, 80);
+ WiFiSSLClient wifi;
+ HttpClient client = HttpClient(wifi, HOST, 443);
  
 
 
@@ -119,7 +120,7 @@ Serial.print(" Requesting temperatures...");
  Serial.print(":");
  print2digits(rtc.getMinutes());
 
-  send_request(temp1, "external Temp.", warning);
+  send_request(temp1, "externalTemp", "Bxl","C°",key,warning);
 
   // if the server's disconnected, stop the client:
  /* if (!client.connected()) {
@@ -135,18 +136,19 @@ Serial.print(" Requesting temperatures...");
 } // /loop
 
 
-void send_request(float measure_value, String measure_type , String warning) { 
+void send_request(float measure_value, String measure_type , String origin, String measure_unit, String key ,String warning) { 
  // convert values to String 
  String _measure_value = String(measure_value);
- String _measure_type = String(measure_type);  
+ String _measure_type = String(measure_type);
+ String _measure_unit = String(measure_unit);  
  String _warning = warning;
  Serial.print(" Begin send Request "); 
  String contentType = "application/x-www-form-urlencoded";
- String postData = "measure_value=" + _measure_value + "&measure_type=" + _measure_type;
+ String postData = "measure_value=" + _measure_value + "&measure_type=" + _measure_type + "&measure_unit=" + _measure_unit + "&origin=" + origin + "&key=" + key;
 
- Serial.println(postData); 
+ Serial.println(HOST + httpsRequest + '/' + postData); 
 
-  client.post("/v1/measure/create", contentType, postData);
+  client.post(httpsRequest, contentType, postData);
 
 int statusCode = client.responseStatusCode();
   String response = client.responseBody();
